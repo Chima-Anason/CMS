@@ -1,0 +1,81 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8" />
+    <title>Customer Management System</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta http-equiv="X-UA-Compatible" content="ie=edge" />
+    <link
+            href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/css/bootstrap.min.css"
+            rel="stylesheet"
+            integrity="sha384-EVSTQN3/azprG1Anm3QDgpJLIm9Nao0Yz1ztcQTwFspd3yD65VohhpuuCOmLASjC"
+            crossorigin="anonymous"
+    />
+    <link
+            rel="stylesheet"
+            href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.7.2/font/bootstrap-icons.css"
+    />
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+    <title>Static Template</title>
+</head>
+<body>
+<nav class="navbar navbar-dark bg-dark mb-5">
+    <div class="container-fluid d-flex justify-content-center">
+        <a class="navbar-brand" href="#">
+            Customer Management System
+        </a>
+    </div>
+</nav>
+<div class="d-grid gap-2 d-md-flex justify-content-md-end">
+    <a href="add_customer.html" class="btn btn-primary me-md-2" type="button">Add Customer</a>
+</div>
+<div  id="customer_data"></div>
+<table class="table">
+    <thead>
+    <tr>
+        <th scope="col">#</th>
+        <th scope="col">Name</th>
+        <th scope="col">Age</th>
+        <th scope="col">Cell</th>
+        <th scope="col"></th>
+    </tr>
+    </thead>
+    <tbody id="table-data"></tbody>
+</table>
+<script>
+    (function () {
+        $.ajax({
+            url: "/api/customer/all",
+            success: function (response) {
+                console.log(response[0]);
+                response.forEach((customer, index) => {
+                    $("#table-data").append(`
+                        <tr>
+                          <th scope="row">${index+1}</th>
+                          <td>${customer.name}</td>
+                          <td>${customer.birthday}</td>
+                          <td>${customer.cell || ""}</td>
+                          <td>
+                            <a href=${"update_customer.html?customerId=" + customer.customerId}><i class="bi bi-pencil-square text-success"></i></a>
+                            <span onclick=${"onCustomerDelete(" + customer.customerId + ")"} ><i class="bi bi-trash text-danger"></i></span>
+                          </td>
+                        </tr>
+                    `);
+                });
+            }
+        });
+    })();
+
+    function onCustomerDelete(id) {
+        console.log(id);
+        $.ajax({
+            url: `/api/customer/${id}`,
+            type: 'DELETE',
+            success: function(result) {
+                window.location.reload();
+            }
+        });
+    }
+</script>
+</body>
+</html>
